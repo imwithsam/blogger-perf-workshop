@@ -4,7 +4,13 @@ class ArticlesController < ApplicationController
   end
 
   def index
-    @articles, @tag = Article.search_by_tag_name(params[:tag])
+    if params[:tag].blank?
+      @tag = nil
+      @articles = Article.includes(:tags).paginate(:page => params[:page])
+    else
+      @tag = Tag.find_by_name(params[:tag])
+      @articles = @tag.articles.paginate(:page => params[:page])
+    end
   end
 
   def new
